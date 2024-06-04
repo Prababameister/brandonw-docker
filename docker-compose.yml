@@ -1,0 +1,34 @@
+services:
+    brandonw-arm:
+        build:
+            context: ./brandonw-image
+            dockerfile: Dockerfile
+            args:
+                GITHUB_TOKEN: ${GITHUB_TOKEN}
+                GITHUB_ID_EMAIL: ${GITHUB_ID_EMAIL}
+                GITHUB_ID_NAME: ${GITHUB_ID_NAME}
+        stdin_open: true
+        tty: true
+        environment:
+            DISPLAY: brandonw-display-service:0
+        networks:
+            - brandonw-display
+
+          
+    brandonw-display-service:
+        image: theasp/novnc:latest
+        ports:
+            - "5050:8080"
+        environment:
+            DISPLAY_WIDTH: 2000
+            DISPLAY_HEIGHT: 1500
+            RUN_XTERM: "no"
+        networks:
+            - brandonw-display
+        deploy:
+            restart_policy:
+                condition: none
+
+networks:
+    brandonw-display:
+        driver: bridge
